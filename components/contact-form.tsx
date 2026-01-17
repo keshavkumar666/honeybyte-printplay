@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Send, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -22,13 +21,41 @@ const subjects = [
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [selectedSubject, setSelectedSubject] = useState("")
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    const form = e.target as HTMLFormElement
+    const formData = new FormData(form)
+
+    const name = formData.get("name") as string
+    const email = formData.get("email") as string
+    const phone = (formData.get("phone") as string) || "Not provided"
+    const subject = subjects.find(s => s.toLowerCase().includes(selectedSubject.replace(/-/g, " "))) || selectedSubject
+    const message = formData.get("message") as string
+
+    const waMsg = `
+Hello! I sent a message via the website 📨
+
+Name: ${name}
+Email: ${email}
+Phone: ${phone}
+Subject: ${subject}
+
+Message:
+${message}
+    `.trim()
+
+    const waUrl = `https://wa.me/919142713879?text=${encodeURIComponent(waMsg)}`
+
+    // Simulate delay for button loader
+    await new Promise((resolve) => setTimeout(resolve, 600))
+
+    window.open(waUrl, "_blank")
+
     setIsSubmitting(false)
-    alert("Your message has been sent! We'll get back to you soon.")
   }
 
   return (
@@ -73,7 +100,7 @@ export function ContactForm() {
 
           <div className="space-y-2">
             <Label htmlFor="subject">Subject *</Label>
-            <Select name="subject" required>
+            <Select required onValueChange={setSelectedSubject}>
               <SelectTrigger className="border-border/50 bg-background/50">
                 <SelectValue placeholder="Select subject" />
               </SelectTrigger>
@@ -104,12 +131,12 @@ export function ContactForm() {
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Sending...
+              Redirecting to WhatsApp...
             </>
           ) : (
             <>
               <Send className="mr-2 h-4 w-4" />
-              Send Message
+              Send via WhatsApp
             </>
           )}
         </Button>
