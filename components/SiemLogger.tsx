@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const API = "https://honeybyte-printplay.vercel.app/collect-log";
+const API = "https://deluxe-surgery-revered.ngrok-free.dev/";
 
 let requestCount = 0;
 
