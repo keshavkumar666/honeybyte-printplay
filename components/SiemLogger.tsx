@@ -1,17 +1,16 @@
-const SIEM_API = "https://deluxe-surgery-revered.ngrok-free.dev/collect-log";
+"use client";
 
-export async function sendLog(data) {
-  try {
-    await fetch(SIEM_API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true"   // 🔥 THIS FIXES IT
-      },
-      body: JSON.stringify(data)
+import { useEffect } from "react";
+import { sendLog } from "@app/utils/logger";
+
+export default function SiemLogger() {
+  useEffect(() => {
+    sendLog({
+      event: "page_visit",
+      url: window.location.href,
+      userAgent: navigator.userAgent
     });
-  } catch (e) {
-    console.log("SIEM log failed", e);
-  }
-}
+  }, []);
 
+  return null;
+}
